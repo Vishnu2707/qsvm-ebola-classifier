@@ -36,4 +36,4 @@ Data/
 *.env
 
 # Logs
-*.log
+*.logvenv/
