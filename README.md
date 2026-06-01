@@ -284,7 +284,7 @@ Manuscript scaffold at `paper/draft.tex`.
   author = {Ajith, Vishnu},
   year   = {2026},
   url    = {https://github.com/Vishnu2707/qsvm-ebola-classifier-},
-  note   = {Quentangle Quantum Systems / Ulster University (via QAHE Ltd.)}
+  note   = {Quentangle}
 }
 ```
 
