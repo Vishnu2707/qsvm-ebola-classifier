@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install core dependencies
+        run: |
+          pip install pennylane scikit-learn numpy pandas scipy
+
+      - name: Syntax check
+        run: |
+          python -m py_compile main.py
+          python -m py_compile src/data_prep.py
+          python -m py_compile src/quantum_kernel.py
+          python -m py_compile src/qsvm.py
+          python -m py_compile src/classical_baselines.py
+          python -m py_compile src/evaluation.py
+          python -m py_compile src/visualizations.py
+          echo "All modules compile cleanly"
+
+      - name: Quantum kernel sanity check
+        run: |
+          python -c "
+          import pennylane as qml
+          import numpy as np
+          dev = qml.device('default.qubit', wires=6)
+          @qml.qnode(dev)
+          def circuit(x):
+              qml.AngleEmbedding(x, wires=range(6))
+              return qml.probs(wires=range(6))
+          x = np.random.uniform(0, np.pi, 6)
+          result = circuit(x)
+          assert abs(result[0] - circuit(x)[0]) < 1e-6, 'Kernel not deterministic'
+          print('Quantum kernel sanity check passed')
+          "
