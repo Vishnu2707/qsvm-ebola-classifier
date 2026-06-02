@@ -2,7 +2,7 @@
   "model": "QSVM_ZZFeatureMap",
   "n_qubits": 6,
   "kernel_type": "ZZFeatureMap",
-  "kernel_compute_time_s": 437.30256485939026,
+  "kernel_compute_time_s": 432.75596499443054,
   "geometric_difference": 753.7157669592391,
   "geometric_difference_favours_quantum": true,
   "C": 0.1,

@@ -18,6 +18,11 @@ def main():
     parser.add_argument("--skip-figures", action="store_true", help="Skip figure generation.")
     parser.add_argument("--fast", action="store_true", help="Use smaller sample-complexity sweep.")
     parser.add_argument(
+        "--rescue",
+        action="store_true",
+        help="Run bandwidth tuning + VQC positive-result experiments.",
+    )
+    parser.add_argument(
         "--binary",
         action="store_true",
         help="Binary mode: BUNDIBUGYO vs NOT_BUNDIBUGYO",
@@ -84,6 +89,49 @@ def main():
     from evaluation import run_all_statistical_tests
 
     run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names)
+
+    tuned_results = None
+    vqc_results = None
+    if args.rescue:
+        from bandwidth_sweep import sweep_bandwidth, train_tuned_qsvm
+        from vqc import train_vqc
+
+        sweep, best_bw = sweep_bandwidth(X_train_raw, y_train_raw, label_names)
+        del sweep
+        tuned_results, _, _, _, K_tuned = train_tuned_qsvm(
+            X_train_raw,
+            y_train_raw,
+            X_test,
+            y_test,
+            best_bw,
+            label_names,
+        )
+
+        vqc_results, _, _, _ = train_vqc(X_train_raw, y_train_raw, X_test, y_test, label_names)
+
+        if not args.skip_figures:
+            import json
+
+            from visualizations import fig_bandwidth_sweep, fig_kernel_before_after
+
+            with open("results/metrics/bandwidth_sweep.json") as f:
+                sweep_data = json.load(f)
+            fig_bandwidth_sweep(sweep_data)
+            K_default = np.load("results/metrics/K_train.npy")
+            fig_kernel_before_after(K_default, K_tuned, y_train_raw, label_names)
+
+        qsvm_macro_recall = qsvm_results["classification_report"]["macro avg"]["recall"]
+        best_classical_name, best_classical = max(
+            all_results.items(),
+            key=lambda item: item[1]["classification_report"]["macro avg"]["recall"],
+        )
+        best_classical_recall = best_classical["classification_report"]["macro avg"]["recall"]
+
+        print("\n=== Rescue Experiment Summary ===")
+        print(f"Default QSVM macro recall:         {qsvm_macro_recall:.4f}")
+        print(f"Bandwidth-tuned QSVM macro recall: {tuned_results['macro_recall']:.4f}")
+        print(f"VQC Bundibugyo recall:             {vqc_results['bundibugyo_recall']:.4f}")
+        print(f"Best classical macro recall:       {best_classical_recall:.4f} ({best_classical_name})")
 
     if not args.skip_figures:
         from quantum_kernel import draw_circuit

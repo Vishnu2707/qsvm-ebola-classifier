@@ -1,0 +1,7 @@
+{
+  "model": "VQC",
+  "n_layers": 3,
+  "bundibugyo_recall": 0.6842105263157895,
+  "macro_recall": 0.5773993808049536,
+  "roc_auc": 0.5690402476780185
+}

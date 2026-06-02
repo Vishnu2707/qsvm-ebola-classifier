@@ -45,6 +45,94 @@ def _save(fig, name):
     print(f"Saved: {name}")
 
 
+def fig_bandwidth_sweep(sweep_data):
+    """Dual-axis bandwidth sweep figure for KTA and off-diagonal spread."""
+    sweep = sweep_data["sweep"]
+    best_bw = sweep_data["optimal_bandwidth"]
+
+    bws = [r["bandwidth"] for r in sweep]
+    ktas = [r["kta"] for r in sweep]
+    stds = [r["offdiag_std"] for r in sweep]
+
+    fig, ax1 = plt.subplots(figsize=(9, 5.5))
+
+    color1 = "#9B2226"
+    ax1.plot(
+        bws,
+        ktas,
+        color=color1,
+        linewidth=2.4,
+        marker="o",
+        markersize=6,
+        label="Kernel-target alignment",
+    )
+    ax1.set_xlabel("Bandwidth lambda", fontsize=12)
+    ax1.set_ylabel("Kernel-Target Alignment", fontsize=12, color=color1)
+    ax1.tick_params(axis="y", labelcolor=color1)
+    ax1.set_xscale("log")
+
+    ax2 = ax1.twinx()
+    color2 = "#005F73"
+    ax2.plot(
+        bws,
+        stds,
+        color=color2,
+        linewidth=2.0,
+        marker="s",
+        markersize=5,
+        linestyle="--",
+        label="Off-diagonal sigma",
+    )
+    ax2.set_ylabel("Kernel Off-Diagonal sigma", fontsize=12, color=color2)
+    ax2.tick_params(axis="y", labelcolor=color2)
+    ax2.axhline(0.10, color=color2, linestyle=":", linewidth=0.9, alpha=0.6)
+
+    ax1.axvspan(1.0, 2.0, alpha=0.08, color="gray")
+    ax1.axvline(best_bw, color="#0A9396", linewidth=1.5, linestyle="-.")
+    ax1.annotate(
+        f"lambda* = {best_bw}",
+        xy=(best_bw, max(ktas)),
+        xytext=(best_bw * 1.3, max(ktas) * 0.85),
+        fontsize=10,
+        color="#0A9396",
+        arrowprops=dict(arrowstyle="->", color="#0A9396"),
+    )
+    ax1.annotate("degenerate\nregion", xy=(1.4, min(ktas)), fontsize=9, color="gray", ha="center")
+
+    fig.tight_layout()
+    _save(fig, "bandwidth_sweep")
+
+
+def fig_kernel_before_after(K_default, K_tuned, y_train, label_names):
+    """Side-by-side kernel heatmaps for default and tuned bandwidths."""
+    del label_names
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+    sort_idx = np.argsort(y_train)
+    for ax, K, label in [
+        (axes[0], K_default, "lambda = 1.0 (default)"),
+        (axes[1], K_tuned, "lambda = lambda* (tuned)"),
+    ]:
+        Ks = K[np.ix_(sort_idx, sort_idx)]
+        im = ax.imshow(Ks, cmap="RdYlBu_r", aspect="auto", vmin=0, vmax=1)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.text(
+            0.5,
+            -0.05,
+            label,
+            transform=ax.transAxes,
+            ha="center",
+            va="top",
+            fontsize=12,
+            fontweight="bold",
+        )
+        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+
+    fig.tight_layout()
+    _save(fig, "kernel_before_after")
+
+
 def fig_binary_roc_pr(all_results, qsvm_results, y_test, all_predictions, qsvm_proba, label_encoder):
     """Binary mode: ROC curve + precision-recall curve side by side."""
     from sklearn.metrics import auc, precision_recall_curve, roc_curve

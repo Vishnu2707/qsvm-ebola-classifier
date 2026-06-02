@@ -1,0 +1,34 @@
+{
+  "model": "QSVM_bandwidth_tuned",
+  "optimal_bandwidth": 0.05,
+  "offdiag_std": 0.08729490759445306,
+  "macro_recall": 0.5687306501547987,
+  "roc_auc": 0.5616099071207431,
+  "classification_report": {
+    "BUNDIBUGYO": {
+      "precision": 0.2222222222222222,
+      "recall": 0.631578947368421,
+      "f1-score": 0.3287671232876712,
+      "support": 19.0
+    },
+    "NOT_BUNDIBUGYO": {
+      "precision": 0.86,
+      "recall": 0.5058823529411764,
+      "f1-score": 0.6370370370370371,
+      "support": 85.0
+    },
+    "accuracy": 0.5288461538461539,
+    "macro avg": {
+      "precision": 0.5411111111111111,
+      "recall": 0.5687306501547987,
+      "f1-score": 0.48290208016235414,
+      "support": 104.0
+    },
+    "weighted avg": {
+      "precision": 0.743482905982906,
+      "recall": 0.5288461538461539,
+      "f1-score": 0.5807184951020568,
+      "support": 104.0
+    }
+  }
+}
