@@ -8,6 +8,11 @@ import os
 import numpy as np
 from statsmodels.stats.contingency_tables import mcnemar
 
+try:
+    from bootstrap_ci import run_bootstrap
+except ImportError:  # pragma: no cover - supports package imports in smoke tests
+    from .bootstrap_ci import run_bootstrap
+
 
 def mcnemar_test(y_true, pred_model_a, pred_model_b, model_a_name, model_b_name):
     """Run McNemar's paired test for two classifiers on the same test set."""
@@ -56,4 +61,10 @@ def run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names):
         )
     with open("results/metrics/statistical_tests.json", "w") as f:
         json.dump(tests, f, indent=2)
+    bootstrap_preds = {
+        model_name: np.asarray(preds["y_pred"])
+        for model_name, preds in all_predictions.items()
+    }
+    bootstrap_preds["QSVM"] = np.asarray(qsvm_preds)
+    run_bootstrap(np.asarray(y_test), bootstrap_preds)
     return tests

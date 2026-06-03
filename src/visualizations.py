@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -421,6 +422,47 @@ def fig_model_recall_comparison_bar(all_results, qsvm_results, label_names):
     _save(fig, "recall_comparison_bar")
 
 
+def fig_bootstrap_ci(ci_results, out_path="results/figures/bootstrap_ci.png"):
+    """Horizontal error-bar chart for bootstrap macro-recall intervals."""
+    rows = sorted(ci_results.items(), key=lambda item: item[1]["point"])
+    names = [name.replace("_", " ") for name, _ in rows]
+    points = np.array([v["point"] for _, v in rows])
+    lo = np.array([v["ci_lo"] for _, v in rows])
+    hi = np.array([v["ci_hi"] for _, v in rows])
+    xerr = np.vstack([points - lo, hi - points])
+
+    fig, ax = plt.subplots(figsize=(8, max(4, 0.45 * len(rows) + 1.5)))
+    colors = [PALETTE.get(name.replace(" ", "_"), "#666666") for name, _ in rows]
+    y = np.arange(len(rows))
+    ax.errorbar(points, y, xerr=xerr, fmt="none", ecolor="#333333", elinewidth=1.5, capsize=4)
+    ax.scatter(points, y, s=52, color=colors, zorder=3)
+
+    xgb_key = next((name for name in ci_results if "xgboost" in name.lower()), None)
+    if xgb_key:
+        ax.axvline(
+            ci_results[xgb_key]["point"],
+            color=PALETTE.get("XGBoost", "#EE9B00"),
+            linestyle="--",
+            linewidth=1.3,
+            label="XGBoost point estimate",
+        )
+        ax.legend(frameon=False, fontsize=9)
+
+    ax.set_yticks(y)
+    ax.set_yticklabels(names)
+    ax.set_xlabel("Macro Recall")
+    ax.set_xlim(0, min(1.0, max(hi) + 0.08))
+    ax.set_title("Bootstrap 95% CI on Macro Recall")
+    ax.grid(True, axis="x", alpha=0.35)
+    ax.grid(False, axis="y")
+    fig.tight_layout()
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    fig.savefig(out_path, bbox_inches="tight", dpi=300)
+    plt.close(fig)
+    print(f"Saved: {out_path}")
+
+
 def generate_all_figures(all_results, qsvm_results, y_test, all_predictions, qsvm_proba, qsvm_preds, K_train, y_train, label_names, label_encoder, df, hdx_data, sample_complexity_data, binary=False):
     print("\n=== Generating Research Figures ===")
     if binary:
@@ -433,4 +475,8 @@ def generate_all_figures(all_results, qsvm_results, y_test, all_predictions, qsv
     fig_symptom_correlation_network(df, label_names)
     fig_outbreak_context(hdx_data)
     fig_model_recall_comparison_bar(all_results, qsvm_results, label_names)
+    ci_path = "results/metrics/bootstrap_ci.json"
+    if os.path.exists(ci_path):
+        with open(ci_path) as f:
+            fig_bootstrap_ci(json.load(f))
     print("\n=== All figures saved to results/figures/ ===")
