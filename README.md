@@ -41,8 +41,11 @@ flowchart TD
 
     subgraph Models["Model Training"]
         L["Classical Baselines\nLinear SVM · RBF SVM\nRandom Forest · LR · XGBoost"]
-        M["ZZFeatureMap Kernel\n6 qubits · depth 2\nK = overlap of quantum states"]
-        N["QSVM\nSVC precomputed kernel\nC=0.1 · class weight balanced"]
+        M["Default ZZFeatureMap Kernel\n6 qubits · depth 2\nK = overlap of quantum states"]
+        N["Default QSVM\nSVC precomputed kernel\nC=0.1 · class weight balanced"]
+        S["Bandwidth Sweep\nlambda in 0.05-2.0\nmaximise KTA"]
+        T["Tuned QSVM\nlambda* = 0.05\nC=1.0 · class weight balanced"]
+        U["VQC\nAngleEmbedding +\nStronglyEntanglingLayers"]
     end
 
     subgraph Evaluation["Evaluation"]
@@ -50,6 +53,7 @@ flowchart TD
         P["Geometric Difference\ng = 820"]
         Q["Kernel Diagnostics\noff-diagonal sigma = 0.044"]
         R["McNemar Test\np less than 0.005 all comparisons"]
+        V["Rescue Metrics\nKTA 0.4128\nTuned recall 0.5687"]
     end
 
     Sources --> E
@@ -57,8 +61,12 @@ flowchart TD
     G --> Classes
     Classes --> L
     Classes --> M --> N
+    Classes --> S --> T
+    Classes --> U
     L --> O
     N --> O
+    T --> V
+    U --> V
     O --> P
     O --> Q
     O --> R
