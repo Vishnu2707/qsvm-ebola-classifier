@@ -27,6 +27,11 @@ def main():
         action="store_true",
         help="Binary mode: BUNDIBUGYO vs NOT_BUNDIBUGYO",
     )
+    parser.add_argument(
+        "--vqc-sweep",
+        action="store_true",
+        help="Run VQC bandwidth sweep (slow, ~6hr, requires --rescue).",
+    )
     args = parser.parse_args()
 
     print("=" * 60)
@@ -108,6 +113,17 @@ def main():
         )
 
         vqc_results, _, _, _ = train_vqc(X_train_raw, y_train_raw, X_test, y_test, label_names)
+        if args.vqc_sweep:
+            from vqc_bandwidth_sweep import sweep_vqc_bandwidth
+
+            vqc_sweep = sweep_vqc_bandwidth(
+                X_train_raw,
+                y_train_raw,
+                X_test,
+                y_test,
+                out_dir="results",
+            )
+            del vqc_sweep
 
         if not args.skip_figures:
             import json
