@@ -6,12 +6,12 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active--research-red)
 
-Quantum Support Vector Machine for rapid Ebola strain triage — **Bundibugyo · Zaire · Sudan · Non-Ebola HF** — using a ZZFeatureMap quantum kernel. Motivated by the 2026 DRC/Uganda Bundibugyo outbreak (WHO PHEIC declared 17 May 2026) where standard Zaire-calibrated PCR kits returned false negatives, delaying outbreak detection by 10 days.
+Quantum Support Vector Machine for rapid Ebola strain triage — **Bundibugyo · Zaire · Sudan · Non-Ebola HF** — using a ZZFeatureMap quantum kernel. The project now contains both the original negative result and the bandwidth-tuned rescue experiment: naive quantum kernels concentrate, but bandwidth optimisation recovers useful kernel structure for the binary Bundibugyo triage task.
 
 ---
 
 > [!IMPORTANT]
-> **Key Finding:** Despite geometric difference g = 820 — indicating the quantum kernel spans a fundamentally different functional space from classical kernels — the ZZFeatureMap kernel degenerates to a near-constant matrix (off-diagonal σ = 0.044) on reconstructed clinical tabular data. This reveals a critical gap between kernel expressibility and predictive usefulness in clinical QML.
+> **Key Finding:** Despite geometric difference g = 820 — indicating the quantum kernel spans a fundamentally different functional space from classical kernels — the default ZZFeatureMap degenerates to a near-constant matrix (off-diagonal σ = 0.0445) on reconstructed clinical tabular data. Bandwidth tuning moves kernel-target alignment from 0.1613 to 0.4128 and lifts binary QSVM macro recall from 0.5000 to 0.5687, beating the best classical binary baseline in this run.
 
 ---
 
