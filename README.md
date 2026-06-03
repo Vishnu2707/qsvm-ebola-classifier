@@ -144,6 +144,22 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
+**Bandwidth sweep** — kernel-target alignment and off-diagonal spread across lambda. The best KTA occurs at lambda = 0.05; default lambda = 1.0 sits in the concentrated region.
+
+![Bandwidth Sweep](results/figures/bandwidth_sweep.png)
+
+</td>
+<td width="50%">
+
+**Kernel before/after** — default vs tuned quantum kernels, sorted by class label. Tuning visibly changes the kernel geometry used by the classifier.
+
+![Kernel Before After](results/figures/kernel_before_after.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
 **Quantum kernel matrix** — sorted by class label. Block-diagonal structure would indicate class separation. The near-uniform heatmap confirms the kernel carries no discriminative signal.
 
 ![Kernel Matrix](results/figures/kernel_matrix_heatmap.png)
@@ -176,9 +192,9 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
-**Precision-recall curves** — all 5 models across 4 classes. Bundibugyo (top row) is the hardest class across all methods.
+**Binary ROC and precision-recall curves** — Bundibugyo vs not-Bundibugyo model ranking for the binary triage setting used in the rescue experiment.
 
-![PR Grid](results/figures/precision_recall_grid.png)
+![Binary ROC PR](results/figures/binary_roc_pr.png)
 
 </td>
 <td width="50%">
