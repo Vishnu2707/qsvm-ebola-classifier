@@ -233,6 +233,11 @@ python main.py --skip-pdf --skip-qsvm
 python main.py --skip-pdf --binary
 ```
 
+**Rescue experiment — binary tuned QSVM + VQC (~2-3 hr on laptop CPU):**
+```bash
+python main.py --skip-pdf --binary --rescue
+```
+
 **macOS only — XGBoost requires OpenMP:**
 ```bash
 brew install libomp
@@ -249,9 +254,12 @@ qsvm-ebola-classifier-/
 │   ├── data_prep.py             IPD reconstruction · SMOTE · PCA
 │   ├── classical_baselines.py   5 classical models with 5-fold CV
 │   ├── quantum_kernel.py        PennyLane ZZFeatureMap kernel
+│   ├── quantum_kernel_tuned.py  Bandwidth-scaled ZZFeatureMap kernel
 │   ├── qsvm.py                  QSVM training · kernel diagnostics
+│   ├── bandwidth_sweep.py       KTA sweep · tuned QSVM training
+│   ├── vqc.py                   Variational quantum classifier
 │   ├── evaluation.py            McNemar test · statistical tests
-│   └── visualizations.py        7 publication-ready figures
+│   └── visualizations.py        Publication-ready figures
 ├── results/
 │   ├── figures/                 PDF + PNG at 300 DPI
 │   └── metrics/                 JSON results dumps
