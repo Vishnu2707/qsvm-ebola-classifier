@@ -92,6 +92,15 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 
 ## Results
 
+## Paper Improvement Experiments
+
+| Flag | Runtime | New outputs |
+|------|---------|-------------|
+| `--bootstrap` (default ON) | <1 min | bootstrap_ci.json, figures/bootstrap_ci.png |
+| `--rescue` | 2-3 hr | bandwidth_sweep.json, qsvm_tuned_results.json, vqc_results.json |
+| `--rescue --noise` | +5 min | noise_model.json, figures/noise_sensitivity.png |
+| `--rescue --vqc-sweep` | +6-8 hr | vqc_bandwidth_sweep.json, figures/vqc_bandwidth_sweep.png |
+
 ### Classical Baselines vs QSVM: 4-class (test set, natural imbalance)
 
 | Model | Macro Recall | CV Recall | Notes |

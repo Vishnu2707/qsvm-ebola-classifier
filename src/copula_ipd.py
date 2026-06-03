@@ -78,7 +78,17 @@ def copula_reconstruct(
         probs = np.array([freqs.get(s, 0.5) for s in symptoms])
         Z = rng.standard_normal((n, len(symptoms)))
         U = norm.cdf(Z @ L.T)
-        X_parts.append((U < probs).astype(np.int8))
+        X_c = np.zeros((n, len(symptoms)), dtype=np.int8)
+        for j, prob in enumerate(probs):
+            n_pos = int(round(float(prob) * n))
+            if n_pos <= 0:
+                continue
+            if n_pos >= n:
+                X_c[:, j] = 1
+                continue
+            pos_idx = np.argpartition(U[:, j], n_pos - 1)[:n_pos]
+            X_c[pos_idx, j] = 1
+        X_parts.append(X_c)
         y_parts.append(np.full(n, label, dtype=np.int8))
 
     return np.vstack(X_parts), np.concatenate(y_parts), label_map

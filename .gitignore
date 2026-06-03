@@ -19,6 +19,8 @@ results/models/*.pkl
 results/metrics/K_train.npy
 results/metrics/K_test.npy
 results/dataset.csv
+!results/metrics/*.npy
+!results/metrics/*.npz
 
 # Data — PDFs are copyrighted academic papers, link in README instead
 Data/
