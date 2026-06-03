@@ -114,6 +114,30 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 | McNemar p-value (all) | < 0.002 | QSVM significantly different — but worse |
 | QSVM ROC-AUC (binary) | 0.481 | Below random chance |
 
+### Bandwidth Rescue — Binary Bundibugyo Triage
+
+Run with `python main.py --skip-pdf --binary --rescue`.
+
+| Model / Kernel | Macro Recall | Bundibugyo Recall | ROC-AUC | Notes |
+|---|---:|---:|---:|---|
+| Best classical baseline (XGBoost) | 0.5492 | — | — | Strongest binary holdout baseline in rescue run |
+| Default QSVM (lambda = 1.0) | 0.5000 | 1.0000 | — | Degenerate high-sensitivity classifier |
+| **Bandwidth-tuned QSVM (lambda* = 0.05)** | **0.5687** | **0.6316** | **0.5616** | Best KTA bandwidth; beats binary classical baseline |
+| VQC | 0.5774 | 0.6842 | 0.5690 | Independent trainable quantum circuit confirmation |
+
+| Bandwidth | Kernel-Target Alignment | Off-Diagonal Sigma |
+|---:|---:|---:|
+| 0.05 | **0.4128** | 0.0873 |
+| 0.10 | 0.3935 | 0.1995 |
+| 0.15 | 0.3543 | 0.2301 |
+| 0.20 | 0.3079 | 0.2102 |
+| 0.30 | 0.2308 | 0.1446 |
+| 0.50 | 0.1713 | 0.0757 |
+| 0.75 | 0.1672 | 0.0528 |
+| 1.00 | 0.1613 | 0.0445 |
+| 1.50 | 0.1671 | 0.0423 |
+| 2.00 | 0.1776 | 0.0388 |
+
 ### Research Figures
 
 <table>
