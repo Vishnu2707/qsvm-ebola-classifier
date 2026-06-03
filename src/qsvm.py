@@ -92,7 +92,7 @@ def train_qsvm(X_train, y_train, X_test, y_test, label_names, C=0.1, verbose=Tru
     print(f"Macro Recall: {report['macro avg']['recall']:.3f}")
     with open("results/metrics/qsvm_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    np.save("results/metrics/K_train.npy", K_train)
+    np.save("results/metrics/K_train.npy", np.vstack([K_train, K_test]))
     np.save("results/metrics/K_test.npy", K_test)
     joblib.dump(qsvm, "results/models/qsvm.pkl")
     return results, qsvm, y_pred, y_proba, K_train

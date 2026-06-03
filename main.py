@@ -125,6 +125,14 @@ def main():
             )
             del vqc_sweep
 
+        from noise_model import run_noise_analysis
+
+        K_tuned_mat = np.load("results/metrics/K_train_tuned.npy")
+        n_tr = len(y_train_raw)
+        K_tr_tuned = K_tuned_mat[:n_tr, :n_tr]
+        K_te_tuned = K_tuned_mat[n_tr:, :n_tr]
+        run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
+
         if not args.skip_figures:
             import json
 

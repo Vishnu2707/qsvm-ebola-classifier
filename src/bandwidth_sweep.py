@@ -103,6 +103,6 @@ def train_tuned_qsvm(X_train, y_train, X_test, y_test, best_bw, label_names):
 
     with open("results/metrics/qsvm_tuned_results.json", "w") as f:
         json.dump(results, f, indent=2)
-    np.save("results/metrics/K_train_tuned.npy", K_train)
+    np.save("results/metrics/K_train_tuned.npy", np.vstack([K_train, K_test]))
 
     return results, qsvm, y_pred, y_proba, K_train
