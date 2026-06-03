@@ -6,12 +6,12 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-active--research-red)
 
-Quantum Support Vector Machine for rapid Ebola strain triage — **Bundibugyo · Zaire · Sudan · Non-Ebola HF** — using a ZZFeatureMap quantum kernel. The project now contains both the original negative result and the bandwidth-tuned rescue experiment: naive quantum kernels concentrate, but bandwidth optimisation recovers useful kernel structure for the binary Bundibugyo triage task.
+Quantum Support Vector Machine for rapid Ebola strain triage (**Bundibugyo · Zaire · Sudan · Non-Ebola HF**) using a ZZFeatureMap quantum kernel. The project now contains both the original negative result and the bandwidth-tuned rescue experiment: naive quantum kernels concentrate, but bandwidth optimisation recovers useful kernel structure for the binary Bundibugyo triage task.
 
 ---
 
 > [!IMPORTANT]
-> **Key Finding:** Despite geometric difference g = 820 — indicating the quantum kernel spans a fundamentally different functional space from classical kernels — the default ZZFeatureMap degenerates to a near-constant matrix (off-diagonal σ = 0.0445) on reconstructed clinical tabular data. Bandwidth tuning moves kernel-target alignment from 0.1613 to 0.4128 and lifts binary QSVM macro recall from 0.5000 to 0.5687, beating the best classical binary baseline in this run.
+> **Key Finding:** Despite geometric difference g = 820, indicating the quantum kernel spans a fundamentally different functional space from classical kernels, the default ZZFeatureMap degenerates to a near-constant matrix (off-diagonal σ = 0.0445) on reconstructed clinical tabular data. Bandwidth tuning moves kernel-target alignment from 0.1613 to 0.4128 and lifts binary QSVM macro recall from 0.5000 to 0.5687, beating the best classical binary baseline in this run.
 
 ---
 
@@ -74,7 +74,7 @@ flowchart TD
 
 ---
 
-## Quantum Circuit — ZZFeatureMap depth 2
+## Quantum Circuit: ZZFeatureMap depth 2
 
 ```
 |q0> --H--RZ(2phi0)--*-----------*--RZ(2phi0)--*------------------*--||
@@ -92,7 +92,7 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 
 ## Results
 
-### Classical Baselines vs QSVM — 4-class (test set, natural imbalance)
+### Classical Baselines vs QSVM: 4-class (test set, natural imbalance)
 
 | Model | Macro Recall | CV Recall | Notes |
 |---|---|---|---|
@@ -101,27 +101,27 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 | Random Forest | 0.402 | 0.623 ± 0.040 | CV overfits SMOTE training set |
 | XGBoost | 0.384 | 0.611 ± 0.047 | CV overfits SMOTE training set |
 | RBF SVM | 0.380 | 0.514 ± 0.033 | Large CV to test gap |
-| **QSVM (ZZFeatureMap)** | **0.250** | — | Degenerates to single-class prediction |
+| **QSVM (ZZFeatureMap)** | **0.250** | N/A | Degenerates to single-class prediction |
 
 ### Quantum Kernel Diagnostics
 
 | Metric | Value | Interpretation |
 |---|---|---|
-| Kernel diagonal mean | 1.0000 | Correct — K(x,x) = 1 |
+| Kernel diagonal mean | 1.0000 | Correct: K(x,x) = 1 |
 | Kernel off-diagonal mean | 0.0230 | Near-zero overlap |
-| Kernel off-diagonal sigma | 0.0445 | Near-constant — no class structure |
+| Kernel off-diagonal sigma | 0.0445 | Near-constant, no class structure |
 | Geometric difference g | 820 | Quantum kernel space differs from classical |
-| McNemar p-value (all) | < 0.002 | QSVM significantly different — but worse |
+| McNemar p-value (all) | < 0.002 | QSVM significantly different, but worse |
 | QSVM ROC-AUC (binary) | 0.481 | Below random chance |
 
-### Bandwidth Rescue — Binary Bundibugyo Triage
+### Bandwidth Rescue: Binary Bundibugyo Triage
 
 Run with `python main.py --skip-pdf --binary --rescue`.
 
 | Model / Kernel | Macro Recall | Bundibugyo Recall | ROC-AUC | Notes |
 |---|---:|---:|---:|---|
-| Best classical baseline (XGBoost) | 0.5492 | — | — | Strongest binary holdout baseline in rescue run |
-| Default QSVM (lambda = 1.0) | 0.5000 | 1.0000 | — | Degenerate high-sensitivity classifier |
+| Best classical baseline (XGBoost) | 0.5492 | N/A | N/A | Strongest binary holdout baseline in rescue run |
+| Default QSVM (lambda = 1.0) | 0.5000 | 1.0000 | N/A | Degenerate high-sensitivity classifier |
 | **Bandwidth-tuned QSVM (lambda* = 0.05)** | **0.5687** | **0.6316** | **0.5616** | Best KTA bandwidth; beats binary classical baseline |
 | VQC | 0.5774 | 0.6842 | 0.5690 | Independent trainable quantum circuit confirmation |
 
@@ -144,14 +144,14 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
-**Bandwidth sweep** — kernel-target alignment and off-diagonal spread across lambda. The best KTA occurs at lambda = 0.05; default lambda = 1.0 sits in the concentrated region.
+**Bandwidth sweep**: kernel-target alignment and off-diagonal spread across lambda. The best KTA occurs at lambda = 0.05; default lambda = 1.0 sits in the concentrated region.
 
 ![Bandwidth Sweep](results/figures/bandwidth_sweep.png)
 
 </td>
 <td width="50%">
 
-**Kernel before/after** — default vs tuned quantum kernels, sorted by class label. Tuning visibly changes the kernel geometry used by the classifier.
+**Kernel before/after**: default vs tuned quantum kernels, sorted by class label. Tuning visibly changes the kernel geometry used by the classifier.
 
 ![Kernel Before After](results/figures/kernel_before_after.png)
 
@@ -160,14 +160,14 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
-**Quantum kernel matrix** — sorted by class label. Block-diagonal structure would indicate class separation. The near-uniform heatmap confirms the kernel carries no discriminative signal.
+**Quantum kernel matrix**: sorted by class label. Block-diagonal structure would indicate class separation. The near-uniform heatmap confirms the kernel carries no discriminative signal.
 
 ![Kernel Matrix](results/figures/kernel_matrix_heatmap.png)
 
 </td>
 <td width="50%">
 
-**Per-class recall comparison** — all models vs QSVM. QSVM achieves Bundibugyo recall 1.0 by predicting all patients as Bundibugyo (degenerate solution).
+**Per-class recall comparison**: all models vs QSVM. QSVM achieves Bundibugyo recall 1.0 by predicting all patients as Bundibugyo (degenerate solution).
 
 ![Recall Comparison](results/figures/recall_comparison_bar.png)
 
@@ -176,14 +176,14 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
-**Sample complexity** — macro recall vs training set size. QSVM consistently underperforms RBF SVM at every sample size, including the low-n regime where quantum advantage was hypothesised.
+**Sample complexity**: macro recall vs training set size. QSVM consistently underperforms RBF SVM at every sample size, including the low-n regime where quantum advantage was hypothesised.
 
 ![Sample Complexity](results/figures/sample_complexity.png)
 
 </td>
 <td width="50%">
 
-**Symptom correlation network** — per-class co-occurrence structure used to motivate ZZ entanglement design. Node size = symptom frequency, edge weight = correlation strength.
+**Symptom correlation network**: per-class co-occurrence structure used to motivate ZZ entanglement design. Node size = symptom frequency, edge weight = correlation strength.
 
 ![Symptom Network](results/figures/symptom_correlation_network.png)
 
@@ -192,14 +192,14 @@ Run with `python main.py --skip-pdf --binary --rescue`.
 <tr>
 <td width="50%">
 
-**Binary ROC and precision-recall curves** — Bundibugyo vs not-Bundibugyo model ranking for the binary triage setting used in the rescue experiment.
+**Binary ROC and precision-recall curves**: Bundibugyo vs not-Bundibugyo model ranking for the binary triage setting used in the rescue experiment.
 
 ![Binary ROC PR](results/figures/binary_roc_pr.png)
 
 </td>
 <td width="50%">
 
-**Outbreak context** — DRC/Uganda 2026 Bundibugyo epidemic curve from WHO Situation Report 01 (18 May 2026). Confirmed vs suspected from Day 0 alert through Day 24.
+**Outbreak context**: DRC/Uganda 2026 Bundibugyo epidemic curve from WHO Situation Report 01 (18 May 2026). Confirmed vs suspected from Day 0 alert through Day 24.
 
 ![Outbreak Context](results/figures/outbreak_context.png)
 
@@ -218,7 +218,7 @@ python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Full pipeline — classical + QSVM (~20 min):**
+**Full pipeline: classical + QSVM (~20 min):**
 ```bash
 python main.py --skip-pdf
 ```
@@ -228,17 +228,17 @@ python main.py --skip-pdf
 python main.py --skip-pdf --skip-qsvm
 ```
 
-**Binary mode — BUNDIBUGYO vs NOT_BUNDIBUGYO:**
+**Binary mode: BUNDIBUGYO vs NOT_BUNDIBUGYO:**
 ```bash
 python main.py --skip-pdf --binary
 ```
 
-**Rescue experiment — binary tuned QSVM + VQC (~2-3 hr on laptop CPU):**
+**Rescue experiment: binary tuned QSVM + VQC (~2-3 hr on laptop CPU):**
 ```bash
 python main.py --skip-pdf --binary --rescue
 ```
 
-**macOS only — XGBoost requires OpenMP:**
+**macOS only: XGBoost requires OpenMP:**
 ```bash
 brew install libomp
 ```
@@ -283,7 +283,7 @@ All training rows reconstructed from peer-reviewed published case series using I
 | Roddy et al. 2012, PLoS ONE | Bundibugyo | 93 putative | [10.1371/journal.pone.0052986](https://doi.org/10.1371/journal.pone.0052986) |
 | Kiggundu et al. 2022, MMWR | Sudan | 87 confirmed | [10.15585/mmwr.mm7145a5](https://doi.org/10.15585/mmwr.mm7145a5) |
 | Schieffelin et al. 2014, NEJM | Zaire | 106 confirmed | [10.1056/NEJMoa1411680](https://doi.org/10.1056/NEJMoa1411680) |
-| WHO Situation Report 01 | Context only | — | [AFRO IRIS](https://www.afro.who.int/) |
+| WHO Situation Report 01 | Context only | N/A | [AFRO IRIS](https://www.afro.who.int/) |
 
 HDX CSV files (DRC MOH North Kivu 2018-2020) are used for outbreak context visualisation only.
 
@@ -293,9 +293,9 @@ HDX CSV files (DRC MOH North Kivu 2018-2020) are used for outbreak context visua
 
 ### Why the quantum kernel fails here
 
-The ZZFeatureMap encodes PCA-compressed clinical features as qubit rotation angles in [0,π]. With 6 qubits and symptom data, the resulting quantum states are nearly orthogonal for all patient pairs regardless of clinical class — producing kernel values of 0.023 ± 0.044 across the entire matrix.
+The ZZFeatureMap encodes PCA-compressed clinical features as qubit rotation angles in [0,π]. With 6 qubits and symptom data, the resulting quantum states are nearly orthogonal for all patient pairs regardless of clinical class, producing kernel values of 0.023 ± 0.044 across the entire matrix.
 
-This is consistent with **exponential concentration** (Thanasilp et al. 2022): as qubit count increases, angle-embedded quantum kernels concentrate to constant values. Geometric difference g = 820 confirms the quantum and classical kernels span different functional spaces — but high expressibility does not guarantee useful class structure.
+This is consistent with **exponential concentration** (Thanasilp et al. 2022): as qubit count increases, angle-embedded quantum kernels concentrate to constant values. Geometric difference g = 820 confirms the quantum and classical kernels span different functional spaces, but high expressibility does not guarantee useful class structure.
 
 ### How bandwidth tuning rescues the kernel
 
@@ -309,7 +309,7 @@ This challenges the geometric difference heuristic (Huang et al. 2021, *Nature C
 
 ## Reproducibility
 
-All random seeds fixed at `42`. SMOTE applied only to training split — test split preserves natural class imbalance. Rescue metrics are generated by `python main.py --skip-pdf --binary --rescue` and persisted to:
+All random seeds fixed at `42`. SMOTE applied only to training split; test split preserves natural class imbalance. Rescue metrics are generated by `python main.py --skip-pdf --binary --rescue` and persisted to:
 
 - `results/metrics/bandwidth_sweep.json`
 - `results/metrics/qsvm_tuned_results.json`
@@ -319,8 +319,8 @@ All random seeds fixed at `42`. SMOTE applied only to training split — test sp
 
 ## Limitations
 
-- Training rows reconstructed from published summary statistics — not raw patient records
-- Quantum kernel computed on classical simulator — no QPU validation
+- Training rows reconstructed from published summary statistics, not raw patient records
+- Quantum kernel computed on classical simulator, no QPU validation
 - Symptom frequencies assumed stable across outbreaks and geographies
 - Prospective clinical validation required before any field use
 
@@ -356,4 +356,4 @@ Manuscript scaffold at `paper/draft.tex`.
 
 ## Author
 
-**Vishnu Ajith** — R&D Engineer, Quentangle Quantum Systems · Lecturer in Computing, Ulster University (via QAHE Ltd.)
+**Vishnu Ajith**, R&D Engineer, Quentangle Quantum Systems · Lecturer in Computing, Ulster University (via QAHE Ltd.)
