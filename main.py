@@ -28,11 +28,41 @@ def main():
         help="Binary mode: BUNDIBUGYO vs NOT_BUNDIBUGYO",
     )
     parser.add_argument(
+        "--copula",
+        action="store_true",
+        default=True,
+        help="Use Gaussian copula IPD reconstruction (default: True).",
+    )
+    parser.add_argument(
+        "--no-copula",
+        dest="copula",
+        action="store_false",
+        help="Fall back to independent Bernoulli reconstruction.",
+    )
+    parser.add_argument(
+        "--bootstrap",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Run bootstrap CI after evaluation (default: True).",
+    )
+    parser.add_argument(
+        "--noise",
+        action="store_true",
+        help="Run depolarising noise analysis (requires --rescue).",
+    )
+    parser.add_argument(
         "--vqc-sweep",
         action="store_true",
         help="Run VQC bandwidth sweep (slow, ~6hr, requires --rescue).",
     )
     args = parser.parse_args()
+
+    def print_improvement_summary():
+        print("\n=== IMPROVEMENT SUMMARY ===")
+        print(f"  Copula IPD:         {'ON' if args.copula else 'OFF'}")
+        print(f"  Bootstrap CI:       {'ON' if args.bootstrap else 'OFF'}")
+        print(f"  VQC bw sweep:       {'ON' if args.vqc_sweep else 'OFF'}")
+        print(f"  Noise analysis:     {'ON' if args.noise else 'OFF'}")
 
     print("=" * 60)
     print("QSVM Haemorrhagic Fever Classifier")
@@ -51,7 +81,10 @@ def main():
 
     from data_prep import AGE_PARAMS, CLASS_SIZES, build_train_test_split, get_stratified_cv, prepare_features, reconstruct_ipd
 
-    df = reconstruct_ipd(sym_freqs, CLASS_SIZES, AGE_PARAMS)
+    if args.copula:
+        # Copula path is inside reconstruct_ipd by default.
+        pass
+    df = reconstruct_ipd(sym_freqs, CLASS_SIZES, AGE_PARAMS, use_copula=args.copula)
     df.to_csv("results/dataset.csv", index=False)
     if args.binary:
         from data_prep import make_binary_labels
@@ -77,6 +110,7 @@ def main():
 
     if args.skip_qsvm:
         print("\nSkipped QSVM. Classical results are in results/metrics/classical_results.json")
+        print_improvement_summary()
         return
 
     from qsvm import sample_complexity_qsvm, train_qsvm
@@ -93,7 +127,13 @@ def main():
 
     from evaluation import run_all_statistical_tests
 
-    run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names)
+    run_all_statistical_tests(
+        y_test,
+        all_predictions,
+        qsvm_preds,
+        label_names,
+        bootstrap=args.bootstrap,
+    )
 
     tuned_results = None
     vqc_results = None
@@ -125,13 +165,14 @@ def main():
             )
             del vqc_sweep
 
-        from noise_model import run_noise_analysis
+        if args.noise:
+            from noise_model import run_noise_analysis
 
-        K_tuned_mat = np.load("results/metrics/K_train_tuned.npy")
-        n_tr = len(y_train_raw)
-        K_tr_tuned = K_tuned_mat[:n_tr, :n_tr]
-        K_te_tuned = K_tuned_mat[n_tr:, :n_tr]
-        run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
+            K_tuned_mat = np.load("results/metrics/K_train_tuned.npy")
+            n_tr = len(y_train_raw)
+            K_tr_tuned = K_tuned_mat[:n_tr, :n_tr]
+            K_te_tuned = K_tuned_mat[n_tr:, :n_tr]
+            run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
 
         if not args.skip_figures:
             import json
@@ -184,6 +225,7 @@ def main():
     print("\n=== Pipeline Complete ===")
     print("Results in: results/")
     print(f"Key result: QSVM Bundibugyo Recall = {bundibugyo_recall}")
+    print_improvement_summary()
 
 
 if __name__ == "__main__":

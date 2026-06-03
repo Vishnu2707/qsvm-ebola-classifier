@@ -67,6 +67,7 @@ def reconstruct_ipd(
     class_sizes: dict[str, int],
     age_params: dict[str, dict[str, tuple[float, float]]],
     random_seed: int = RANDOM_SEED,
+    use_copula: bool = True,
 ) -> pd.DataFrame:
     """Reconstruct patient-level rows from published symptom frequencies.
 
@@ -78,14 +79,17 @@ def reconstruct_ipd(
     rng = np.random.RandomState(random_seed)
     records: list[dict[str, object]] = []
     feature_cols = list(next(iter(symptom_frequencies.values())).keys())
-    X_sym, y_sym, label_map = copula_reconstruct(
-        symptom_frequencies,
-        class_sizes,
-        feature_cols,
-        seed=random_seed,
-    )
-    if not verify_marginals(X_sym, feature_cols, symptom_frequencies, label_map, y_sym):
-        raise RuntimeError("Copula IPD reconstruction failed marginal verification")
+    if use_copula:
+        X_sym, y_sym, label_map = copula_reconstruct(
+            symptom_frequencies,
+            class_sizes,
+            feature_cols,
+            seed=random_seed,
+        )
+        if not verify_marginals(X_sym, feature_cols, symptom_frequencies, label_map, y_sym):
+            raise RuntimeError("Copula IPD reconstruction failed marginal verification")
+    else:
+        X_sym, y_sym, label_map = None, None, None
 
     for label, freqs in symptom_frequencies.items():
         del freqs
@@ -98,11 +102,15 @@ def reconstruct_ipd(
             rng.normal(ap["survived"][0], ap["survived"][1], n),
         )
         ages = np.clip(ages, 1, 85).round(0)
-        class_rows = X_sym[y_sym == label_map[label]]
+        if use_copula:
+            class_rows = X_sym[y_sym == label_map[label]]
         for i in range(n):
-            record: dict[str, object] = {
-                feat: int(class_rows[i, j]) for j, feat in enumerate(feature_cols)
-            }
+            if use_copula:
+                record: dict[str, object] = {
+                    feat: int(class_rows[i, j]) for j, feat in enumerate(feature_cols)
+                }
+            else:
+                record = {feat: int(rng.binomial(1, symptom_frequencies[label][feat])) for feat in feature_cols}
             record["age_years"] = float(ages[i])
             record["days_since_onset"] = int(rng.choice(range(1, 15)))
             record["haemorrhage_score"] = int(
@@ -120,7 +128,11 @@ def reconstruct_ipd(
             record["label"] = label
             record["died"] = int(died[i])
             record["source_citation"] = SOURCE_CITATIONS[label]
-            record["reconstruction_method"] = "Gaussian_copula_IPD_from_published_frequencies"
+            record["reconstruction_method"] = (
+                "Gaussian_copula_IPD_from_published_frequencies"
+                if use_copula
+                else "IPD_from_published_frequencies"
+            )
             records.append(record)
 
     df = pd.DataFrame(records)

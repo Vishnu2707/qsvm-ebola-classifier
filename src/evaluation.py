@@ -44,7 +44,7 @@ def per_class_recall_comparison(all_results, label_names):
     return table
 
 
-def run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names):
+def run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names, bootstrap=True):
     """Run McNemar tests between QSVM and each classical model."""
     del label_names
     os.makedirs("results/metrics", exist_ok=True)
@@ -61,10 +61,11 @@ def run_all_statistical_tests(y_test, all_predictions, qsvm_preds, label_names):
         )
     with open("results/metrics/statistical_tests.json", "w") as f:
         json.dump(tests, f, indent=2)
-    bootstrap_preds = {
-        model_name: np.asarray(preds["y_pred"])
-        for model_name, preds in all_predictions.items()
-    }
-    bootstrap_preds["QSVM"] = np.asarray(qsvm_preds)
-    run_bootstrap(np.asarray(y_test), bootstrap_preds)
+    if bootstrap:
+        bootstrap_preds = {
+            model_name: np.asarray(preds["y_pred"])
+            for model_name, preds in all_predictions.items()
+        }
+        bootstrap_preds["QSVM"] = np.asarray(qsvm_preds)
+        run_bootstrap(np.asarray(y_test), bootstrap_preds)
     return tests
