@@ -362,18 +362,24 @@ Manuscript scaffold at `paper/draft.tex`.
 ## Citation
 
 ```bibtex
-@misc{ajith2026qsvm,
-  title  = {Geometric Difference Without Predictive Advantage: ZZFeatureMap
-            Quantum Kernels Degenerate on Reconstructed Clinical Tabular Data},
-  author = {Ajith, Vishnu},
-  year   = {2026},
-  url    = {https://github.com/Vishnu2707/qsvm-ebola-classifier-},
-  note   = {Quentangle}
+@article{ajith2026qsvm,
+  title   = {Bandwidth-Tuned {ZZFeatureMap} Quantum Kernels Outperform
+             Classical Baselines for {Ebola} Haemorrhagic Fever Triage
+             Under Clinical Class Imbalance},
+  author  = {Ajith, Vishnu and Haroon, Muhammed Sihan and Ibrahim, Muhammed},
+  journal = {arXiv preprint},
+  year    = {2026},
+  url     = {https://github.com/Vishnu2707/qsvm-ebola-classifier},
+  note    = {Quentangle Quantum Systems; Ulster University (via QAHE Ltd.)}
 }
 ```
 
 ---
 
-## Author
+## Authors
 
-**Vishnu Ajith**, R&D Engineer, Quentangle Quantum Systems · Lecturer in Computing, Ulster University (via QAHE Ltd.)
+**Vishnu Ajith** -- R&D Engineer, Quentangle Quantum Systems · Lecturer in Computing, Ulster University (via QAHE Ltd.)
+
+**Muhammed Sihan Haroon** -- Department of Computing, Ulster University (via QAHE Ltd.)
+
+**Muhammed Ibrahim** -- Department of Computing, Ulster University (via QAHE Ltd.)
