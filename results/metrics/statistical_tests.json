@@ -3,45 +3,45 @@
     "test": "McNemar",
     "model_a": "Linear_SVM",
     "model_b": "QSVM",
-    "n01": 8,
-    "n10": 43,
-    "pvalue": 6.867117736675254e-07,
+    "n01": 6,
+    "n10": 42,
+    "pvalue": 1.0087482138487759e-07,
     "significant_alpha_05": true
   },
   {
     "test": "McNemar",
     "model_a": "RBF_SVM",
     "model_b": "QSVM",
-    "n01": 12,
-    "n10": 54,
-    "pvalue": 1.6944941229476377e-07,
+    "n01": 6,
+    "n10": 49,
+    "pvalue": 1.822834494458192e-09,
     "significant_alpha_05": true
   },
   {
     "test": "McNemar",
     "model_a": "RandomForest",
     "model_b": "QSVM",
-    "n01": 13,
-    "n10": 62,
-    "pvalue": 8.396008067237178e-09,
+    "n01": 11,
+    "n10": 64,
+    "pvalue": 3.108521862394645e-10,
     "significant_alpha_05": true
   },
   {
     "test": "McNemar",
     "model_a": "LogisticRegression",
     "model_b": "QSVM",
-    "n01": 10,
-    "n10": 45,
-    "pvalue": 2.0572645155203517e-06,
+    "n01": 7,
+    "n10": 48,
+    "pvalue": 1.3087586125948292e-08,
     "significant_alpha_05": true
   },
   {
     "test": "McNemar",
     "model_a": "XGBoost",
     "model_b": "QSVM",
-    "n01": 14,
-    "n10": 71,
-    "pvalue": 2.427174154689865e-10,
+    "n01": 16,
+    "n10": 65,
+    "pvalue": 3.641398627788796e-08,
     "significant_alpha_05": true
   }
 ]

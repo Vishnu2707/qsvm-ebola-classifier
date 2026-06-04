@@ -138,65 +138,86 @@ def main():
     tuned_results = None
     vqc_results = None
     if args.rescue:
-        from bandwidth_sweep import sweep_bandwidth, train_tuned_qsvm
-        from vqc import train_vqc
+        if args.noise and not args.vqc_sweep:
+            from noise_model import run_noise_analysis
+            from quantum_kernel_tuned import quantum_kernel_matrix_tuned
 
-        sweep, best_bw = sweep_bandwidth(X_train_raw, y_train_raw, label_names)
-        del sweep
-        tuned_results, _, _, _, K_tuned = train_tuned_qsvm(
-            X_train_raw,
-            y_train_raw,
-            X_test,
-            y_test,
-            best_bw,
-            label_names,
-        )
+            best_bw = 0.05
+            print(f"\n=== Focused Noise Analysis (lambda*={best_bw:.3f}) ===")
+            K_tr_tuned = quantum_kernel_matrix_tuned(
+                X_train_raw,
+                X_train_raw,
+                best_bw,
+                verbose=True,
+            )
+            K_te_tuned = quantum_kernel_matrix_tuned(
+                X_test,
+                X_train_raw,
+                best_bw,
+                verbose=True,
+            )
+            np.save("results/metrics/K_train_tuned.npy", np.vstack([K_tr_tuned, K_te_tuned]))
+            run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
+        else:
+            from bandwidth_sweep import sweep_bandwidth, train_tuned_qsvm
+            from vqc import train_vqc
 
-        vqc_results, _, _, _ = train_vqc(X_train_raw, y_train_raw, X_test, y_test, label_names)
-        if args.vqc_sweep:
-            from vqc_bandwidth_sweep import sweep_vqc_bandwidth
-
-            vqc_sweep = sweep_vqc_bandwidth(
+            sweep, best_bw = sweep_bandwidth(X_train_raw, y_train_raw, label_names)
+            del sweep
+            tuned_results, _, _, _, K_tuned = train_tuned_qsvm(
                 X_train_raw,
                 y_train_raw,
                 X_test,
                 y_test,
-                out_dir="results",
+                best_bw,
+                label_names,
             )
-            del vqc_sweep
 
-        if args.noise:
-            from noise_model import run_noise_analysis
+            vqc_results, _, _, _ = train_vqc(X_train_raw, y_train_raw, X_test, y_test, label_names)
+            if args.vqc_sweep:
+                from vqc_bandwidth_sweep import sweep_vqc_bandwidth
 
-            K_tuned_mat = np.load("results/metrics/K_train_tuned.npy")
-            n_tr = len(y_train_raw)
-            K_tr_tuned = K_tuned_mat[:n_tr, :n_tr]
-            K_te_tuned = K_tuned_mat[n_tr:, :n_tr]
-            run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
+                vqc_sweep = sweep_vqc_bandwidth(
+                    X_train_raw,
+                    y_train_raw,
+                    X_test,
+                    y_test,
+                    out_dir="results",
+                )
+                del vqc_sweep
 
-        if not args.skip_figures:
-            import json
+            if args.noise:
+                from noise_model import run_noise_analysis
 
-            from visualizations import fig_bandwidth_sweep, fig_kernel_before_after
+                K_tuned_mat = np.load("results/metrics/K_train_tuned.npy")
+                n_tr = len(y_train_raw)
+                K_tr_tuned = K_tuned_mat[:n_tr, :n_tr]
+                K_te_tuned = K_tuned_mat[n_tr:, :n_tr]
+                run_noise_analysis(K_tr_tuned, K_te_tuned, y_train_raw, y_test)
 
-            with open("results/metrics/bandwidth_sweep.json") as f:
-                sweep_data = json.load(f)
-            fig_bandwidth_sweep(sweep_data)
-            K_default = np.load("results/metrics/K_train.npy")
-            fig_kernel_before_after(K_default, K_tuned, y_train_raw, label_names)
+            if not args.skip_figures:
+                import json
 
-        qsvm_macro_recall = qsvm_results["classification_report"]["macro avg"]["recall"]
-        best_classical_name, best_classical = max(
-            all_results.items(),
-            key=lambda item: item[1]["classification_report"]["macro avg"]["recall"],
-        )
-        best_classical_recall = best_classical["classification_report"]["macro avg"]["recall"]
+                from visualizations import fig_bandwidth_sweep, fig_kernel_before_after
 
-        print("\n=== Rescue Experiment Summary ===")
-        print(f"Default QSVM macro recall:         {qsvm_macro_recall:.4f}")
-        print(f"Bandwidth-tuned QSVM macro recall: {tuned_results['macro_recall']:.4f}")
-        print(f"VQC Bundibugyo recall:             {vqc_results['bundibugyo_recall']:.4f}")
-        print(f"Best classical macro recall:       {best_classical_recall:.4f} ({best_classical_name})")
+                with open("results/metrics/bandwidth_sweep.json") as f:
+                    sweep_data = json.load(f)
+                fig_bandwidth_sweep(sweep_data)
+                K_default = np.load("results/metrics/K_train.npy")
+                fig_kernel_before_after(K_default, K_tuned, y_train_raw, label_names)
+
+            qsvm_macro_recall = qsvm_results["classification_report"]["macro avg"]["recall"]
+            best_classical_name, best_classical = max(
+                all_results.items(),
+                key=lambda item: item[1]["classification_report"]["macro avg"]["recall"],
+            )
+            best_classical_recall = best_classical["classification_report"]["macro avg"]["recall"]
+
+            print("\n=== Rescue Experiment Summary ===")
+            print(f"Default QSVM macro recall:         {qsvm_macro_recall:.4f}")
+            print(f"Bandwidth-tuned QSVM macro recall: {tuned_results['macro_recall']:.4f}")
+            print(f"VQC Bundibugyo recall:             {vqc_results['bundibugyo_recall']:.4f}")
+            print(f"Best classical macro recall:       {best_classical_recall:.4f} ({best_classical_name})")
 
     if not args.skip_figures:
         from quantum_kernel import draw_circuit

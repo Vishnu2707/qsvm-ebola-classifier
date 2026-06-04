@@ -1,0 +1,38 @@
+{
+  "Linear_SVM": {
+    "point": 0.5892,
+    "ci_lo": 0.4687,
+    "ci_hi": 0.7034,
+    "overlaps_xgb": true
+  },
+  "RBF_SVM": {
+    "point": 0.6303,
+    "ci_lo": 0.5079,
+    "ci_hi": 0.7423,
+    "overlaps_xgb": true
+  },
+  "RandomForest": {
+    "point": 0.587,
+    "ci_lo": 0.4699,
+    "ci_hi": 0.7093,
+    "overlaps_xgb": true
+  },
+  "LogisticRegression": {
+    "point": 0.5981,
+    "ci_lo": 0.4722,
+    "ci_hi": 0.7152,
+    "overlaps_xgb": true
+  },
+  "XGBoost": {
+    "point": 0.4613,
+    "ci_lo": 0.3761,
+    "ci_hi": 0.5634,
+    "overlaps_xgb": true
+  },
+  "QSVM": {
+    "point": 0.5,
+    "ci_lo": 0.5,
+    "ci_hi": 0.5,
+    "overlaps_xgb": true
+  }
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "gate_error": 0.0,
+    "fidelity": 1.0,
+    "offdiag_std": 0.111322,
+    "macro_recall": 0.592,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.0005,
+    "fidelity": 0.979214,
+    "offdiag_std": 0.109008,
+    "macro_recall": 0.592,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.001,
+    "fidelity": 0.95885,
+    "offdiag_std": 0.106741,
+    "macro_recall": 0.592,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.002,
+    "fidelity": 0.919354,
+    "offdiag_std": 0.102344,
+    "macro_recall": 0.5861,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.005,
+    "fidelity": 0.810157,
+    "offdiag_std": 0.090188,
+    "macro_recall": 0.5802,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.01,
+    "fidelity": 0.655659,
+    "offdiag_std": 0.072989,
+    "macro_recall": 0.5802,
+    "usable": "YES"
+  },
+  {
+    "gate_error": 0.02,
+    "fidelity": 0.428051,
+    "offdiag_std": 0.047651,
+    "macro_recall": 0.5712,
+    "usable": "MARGINAL"
+  },
+  {
+    "gate_error": 0.05,
+    "fidelity": 0.115982,
+    "offdiag_std": 0.012911,
+    "macro_recall": 0.5,
+    "usable": "NO"
+  }
+]
