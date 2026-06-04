@@ -11,7 +11,7 @@ Quantum Support Vector Machine for rapid Ebola strain triage (**Bundibugyo · Za
 ---
 
 > [!IMPORTANT]
-> **Key Finding:** Despite geometric difference g = 820, indicating the quantum kernel spans a fundamentally different functional space from classical kernels, the default ZZFeatureMap degenerates to a near-constant matrix (off-diagonal σ = 0.0445) on reconstructed clinical tabular data. Bandwidth tuning moves kernel-target alignment from 0.1613 to 0.4128 and lifts binary QSVM macro recall from 0.5000 to 0.5687, beating the best classical binary baseline in this run.
+> **Key Finding:** Despite geometric difference g = 820, indicating the quantum kernel spans a fundamentally different functional space from classical kernels, the default ZZFeatureMap degenerates to a near-constant matrix (off-diagonal σ = 0.0445) on reconstructed clinical tabular data. Bandwidth tuning moves kernel-target alignment from 0.1613 to 0.4128 and lifts binary QSVM macro recall from 0.5000 to 0.5687, competitive with the best classical binary baseline in this run.
 
 ---
 
@@ -103,14 +103,16 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 
 ### Classical Baselines vs QSVM: 4-class (test set, natural imbalance)
 
-| Model | Macro Recall | CV Recall | Notes |
-|---|---|---|---|
-| Linear SVM | 0.434 | 0.461 ± 0.020 | Most stable generalisation |
-| Logistic Regression | 0.411 | 0.484 ± 0.026 | Best test macro recall |
-| Random Forest | 0.402 | 0.623 ± 0.040 | CV overfits SMOTE training set |
-| XGBoost | 0.384 | 0.611 ± 0.047 | CV overfits SMOTE training set |
-| RBF SVM | 0.380 | 0.514 ± 0.033 | Large CV to test gap |
-| **QSVM (ZZFeatureMap)** | **0.250** | N/A | Degenerates to single-class prediction |
+| Model | Macro Recall | 95% CI | CV Recall | Notes |
+| ----- | ------------ | ------ | --------- | ----- |
+| Linear SVM | 0.434 | [0.331, 0.539] | 0.461 ± 0.020 | Most stable generalisation |
+| Logistic Regression | 0.411 | [0.302, 0.521] | 0.484 ± 0.026 | Best test macro recall |
+| Random Forest | 0.402 | [0.301, 0.508] | 0.623 ± 0.040 | CV overfits SMOTE training set |
+| XGBoost | 0.384 | [0.280, 0.490] | 0.611 ± 0.047 | CV overfits SMOTE training set |
+| RBF SVM | 0.380 | [0.274, 0.486] | 0.514 ± 0.033 | Large CV to test gap |
+| **QSVM (ZZFeatureMap)** | **0.250** | [0.250, 0.250] | N/A | Degenerates to single-class prediction |
+
+> Bootstrap CI: n_boot=2000, seed 42, n_test=104. QSVM CI is degenerate (always predicts one class).
 
 ### Quantum Kernel Diagnostics
 
@@ -127,12 +129,14 @@ K(x1, x2) = Pr[|000000>]  from  U_dag(x2) U(x1) |0>^6
 
 Run with `python main.py --skip-pdf --binary --rescue`.
 
-| Model / Kernel | Macro Recall | Bundibugyo Recall | ROC-AUC | Notes |
-|---|---:|---:|---:|---|
-| Best classical baseline (XGBoost) | 0.5492 | N/A | N/A | Strongest binary holdout baseline in rescue run |
-| Default QSVM (lambda = 1.0) | 0.5000 | 1.0000 | N/A | Degenerate high-sensitivity classifier |
-| **Bandwidth-tuned QSVM (lambda* = 0.05)** | **0.5687** | **0.6316** | **0.5616** | Best KTA bandwidth; beats binary classical baseline |
-| VQC | 0.5774 | 0.6842 | 0.5690 | Independent trainable quantum circuit confirmation |
+| Model / Kernel | Macro Recall | 95% CI | Bundibugyo Recall | ROC-AUC | Notes |
+| -------------- | ------------ | ------ | ----------------- | ------- | ----- |
+| XGBoost (best classical) | 0.5492 | [0.445, 0.653] | N/A | N/A | Reference baseline |
+| Default QSVM (lambda=1.0) | 0.5000 | [0.500, 0.500] | 1.0000 | N/A | Degenerate |
+| **Tuned QSVM (lambda*=0.05)** | **0.5687** | **[0.463, 0.673]** | **0.6316** | **0.5616** | Competitive with XGBoost (CIs overlap) |
+| VQC (L=3 layers) | 0.5774 | -- | 0.6842 | 0.5690 | Best Bundibugyo recall |
+
+> CIs overlap between tuned QSVM and XGBoost: result is **competitive**, not definitively superior, on n=104 test set.
 
 | Bandwidth | Kernel-Target Alignment | Off-Diagonal Sigma |
 |---:|---:|---:|
