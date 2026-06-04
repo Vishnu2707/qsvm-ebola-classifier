@@ -28,7 +28,7 @@ flowchart TD
 
     subgraph Engineering["Feature Engineering"]
         E["PDF Extraction\npdfplumber + Claude API"]
-        F["IPD Reconstruction\nBernoulli sampling from\npublished frequencies"]
+        F["IPD Reconstruction\nGaussian copula from\npublished frequencies\n(intra-cluster rho preserved)"]
         G["SMOTE · PCA 6 components\nScaled to 0-pi for quantum encoding"]
     end
 
